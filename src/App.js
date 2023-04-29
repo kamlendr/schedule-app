@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import reducer from './reducer';
 import Backdrop from '@mui/material/Backdrop';
 import { initState } from './constant';
-import { getUsers, showAlert } from './actions';
+import { getRooms, getUsers, showAlert } from './actions';
 import axios from 'axios';
 import UserSection from './Components/UserSection';
 import { Box, Fade, Modal } from '@mui/material';
@@ -16,6 +16,7 @@ import UserForm from './Components/UserForm';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import RoomSection from './Components/RoomSection';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -25,7 +26,7 @@ export const meetingContext = React.createContext()
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
-  const [formState, setFormState] = React.useState({ show: true, type: "", data: null });
+  const [formState, setFormState] = React.useState({ show: false, type: "", data: null });
   const handleOpen = (formType, formData) => setFormState({ show: true, type: formType, data: formData });
   const handleClose = () => setFormState(prev => ({ ...prev, show: false }));
 
@@ -55,10 +56,23 @@ function App() {
     }
   }
 
+  const getRoomsReq = async () => {
+    try {
+      const res = await axios("/api/v1/room/get-all-rooms")
+      if (!res?.data?.success) {
+        throw new Error(res?.data?.message || 'Something went wrong')
+      }
+      dispatch(getRooms({ data: res.data.data, loading: false, error: false }))
+    } catch (error) {
+      throw error
+    }
+  }
+
 
 
   React.useEffect(() => {
     getUsersReq()
+    getRoomsReq()
   }, [])
 
   return (
@@ -71,12 +85,14 @@ function App() {
           <main>
             <UserSection users={state.users.data} />
           </main>
-
         </div>
         <div  >
           <h3 style={{ textAlign: "center" }} >
             Rooms
           </h3>
+          <main>
+            <RoomSection  />
+          </main>
         </div>
         <div>
           <Button onClick={() => handleOpen('user')} variant='outlined' startIcon={<PersonAddIcon />}>

@@ -1,5 +1,6 @@
 
 export const GET_USERS = "GET_USERS"
+export const GET_ROOMS = "GET_ROOMS"
 export const SHOW_ALERT = "SHOW_ALERT"
 
 export const initState = {
@@ -8,5 +9,10 @@ export const initState = {
     error: false,
     loading: false
   },
-  alert: { show: !false, severity: "success", msg: "hello world" }
+  rooms: {
+    data: [],
+    error: false,
+    loading: false
+  },
+  alert: { show: false, severity: "success", msg: "hello world" }
 }
