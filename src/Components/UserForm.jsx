@@ -2,11 +2,14 @@ import { Button, CircularProgress, TextField } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { meetingContext } from '../App';
 import axios from 'axios';
+import { showAlert } from '../actions';
 
 const UserForm = ({ onSuccess }) => {
 	const {
 		form: { data },
 		closeModal,
+		dispatch,
+		state,
 	} = useContext(meetingContext);
 	const [fields, setFields] = useState(() => ({ userName: data?.userName ?? '', userEmail: data?.userEmail ?? '', userId: data?.userId ?? '' }));
 	const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +48,7 @@ const UserForm = ({ onSuccess }) => {
 			await axios.post('/api/v1/users/add-user', fields);
 			closeModal();
 		} catch (error) {
-			console.log(error.response.data.message || error.message);
+			dispatch(showAlert({ show: true, severity: 'error', msg: error.response.data.message || error.message }));
 		} finally {
 			setIsLoading(false);
 		}
@@ -56,9 +59,9 @@ const UserForm = ({ onSuccess }) => {
 			<div className='user-form'>
 				<h4> {data ? 'Edit User Details' : 'Register New User'}</h4>
 				<div>
-					<TextField error={errors.userName} onChange={handleChange} value={userName} name='userName' label='Name' />
-					<TextField error={errors.userId} onChange={handleChange} value={userId} name='userId' label='User Id' />
-					<TextField error={errors.userEmail} type='email' onChange={handleChange} value={userEmail} name='userEmail' label='Email' />
+					<TextField error={!!(errors.userName)} onChange={handleChange} value={userName} name='userName' label='Name' />
+					<TextField error={!!(errors.userId)} onChange={handleChange} value={userId} name='userId' label='User Id' />
+					<TextField error={!!(errors.userEmail)} type='email' onChange={handleChange} value={userEmail} name='userEmail' label='Email' />
 					<Button sx={{ marginTop: '0.25rem' }} disabled={isLoading} onClick={handleSubmit} variant='contained' color='success'>
 						{data ? 'Update' : 'Submit'}
 					</Button>

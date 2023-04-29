@@ -7,11 +7,19 @@ import Button from '@mui/material/Button';
 import reducer from './reducer';
 import Backdrop from '@mui/material/Backdrop';
 import { initState } from './constant';
-import { getUsers } from './actions';
+import { getUsers, showAlert } from './actions';
 import axios from 'axios';
 import UserSection from './Components/UserSection';
 import { Box, Fade, Modal } from '@mui/material';
 import UserForm from './Components/UserForm';
+
+import Stack from '@mui/material/Stack';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export const meetingContext = React.createContext()
 
@@ -54,7 +62,7 @@ function App() {
   }, [])
 
   return (
-    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: formState }} >
+    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: formState, state, dispatch }} >
       <div className="App">
         <div  >
           <h3 style={{ textAlign: "center" }} >
@@ -101,6 +109,11 @@ function App() {
           </Fade>
         </Modal>
       </div>
+      <Snackbar anchorOrigin={{ vertical: "top", horizontal: "center" }} open={state.alert.show} autoHideDuration={3000} onClose={() => dispatch(showAlert({ ...state.alert, show: false }))}>
+        <Alert onClose={() => dispatch(showAlert({ ...state.alert, show: false }))} severity={state.alert.severity} sx={{ width: '100%' }}>
+          {state.alert.msg}
+        </Alert>
+      </Snackbar>
     </meetingContext.Provider>
   );
 }
