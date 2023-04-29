@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Accordion from '@mui/material/Accordion';
+import LoadingButton from '@mui/lab/LoadingButton';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
@@ -10,10 +11,25 @@ import { Avatar, Button, Chip } from '@mui/material';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { meetingContext } from '../App';
+import { showAlert } from '../actions';
+import axios from 'axios';
 
 export default function UserSection(props) {
 	const { users = [] } = props;
-	const { openModal } = React.useContext(meetingContext);
+	const { openModal, dispatch } = React.useContext(meetingContext);
+	const [isDeleting, setIsDeleting] = React.useState(false);
+
+	const deleteUser = async (id) => {
+		setIsDeleting(true);
+		try {
+			await axios.delete(`/api/v1/users/${id}`);
+			dispatch(showAlert({ show: true, severity: 'success', msg: 'User deleted successsfully' }));
+		} catch (error) {
+			dispatch(showAlert({ show: true, severity: 'error', msg: error?.response?.data?.message || error.message }));
+		} finally {
+			setIsDeleting(false);
+		}
+	};
 
 	return (
 		<div>
@@ -55,9 +71,9 @@ export default function UserSection(props) {
 								)}
 							</div>
 							<div>
-								<Button size='small' variant='outlined' startIcon={<DeleteIcon />}>
+								<LoadingButton onClick={() => deleteUser(user.userId)} loading={isDeleting} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete User
-								</Button>
+								</LoadingButton>
 								<Button onClick={() => openModal('user', user)} variant='contained' startIcon={<EditIcon />}>
 									Edit User
 								</Button>
