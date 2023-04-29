@@ -17,6 +17,7 @@ import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import RoomSection from './Components/RoomSection';
+import RoomForm from './Components/RoomForm';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -91,7 +92,7 @@ function App() {
             Rooms
           </h3>
           <main>
-            <RoomSection  />
+            <RoomSection />
           </main>
         </div>
         <div>
@@ -101,7 +102,7 @@ function App() {
           <Button variant='contained' startIcon={<GroupsIcon />}>
             Schedule a meeting
           </Button>
-          <Button variant='outlined' startIcon={<MeetingRoomIcon />}>
+          <Button onClick={() => handleOpen('room')} variant='outlined' startIcon={<MeetingRoomIcon />}>
             Add New Room
           </Button>
         </div>
@@ -120,7 +121,7 @@ function App() {
         >
           <Fade in={formState.show}>
             <Box sx={style}>
-              <UserForm />
+              {formState.type === 'user' ? <UserForm /> : formState.type === 'room' ? <RoomForm /> : null}
             </Box>
           </Fade>
         </Modal>
