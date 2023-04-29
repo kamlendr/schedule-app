@@ -9,9 +9,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Avatar, Button, Chip } from '@mui/material';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { meetingContext } from '../App';
 
 export default function UserSection(props) {
 	const { users = [] } = props;
+	const { openModal } = React.useContext(meetingContext);
+
 	return (
 		<div>
 			{users.map((user, i) => {
@@ -55,7 +58,7 @@ export default function UserSection(props) {
 								<Button size='small' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete User
 								</Button>
-								<Button variant='contained' startIcon={<EditIcon />}>
+								<Button onClick={() => openModal('user', user)} variant='contained' startIcon={<EditIcon />}>
 									Edit User
 								</Button>
 							</div>
