@@ -8,6 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Avatar, Button, Chip } from '@mui/material';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export default function UserSection(props) {
 	const { users = [] } = props;
@@ -24,7 +25,7 @@ export default function UserSection(props) {
 						<AccordionDetails className='accordion-details'>
 							<div className=''>
 								<div>
-									<Avatar /> {userId}
+									<AccountCircleIcon /> {userId}
 								</div>
 								<div>
 									<MarkunreadIcon /> {userEmail}

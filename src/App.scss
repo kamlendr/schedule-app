@@ -43,3 +43,44 @@
 		gap: 0.25rem;
 	}
 }
+.accordion-details {
+	// background: linear-gradient(370deg, rgba(121, 106, 106, 0.171), rgba(255, 255, 0, 0.144));
+
+	> div:first-child {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.212);
+		padding-bottom: 0.5rem;
+
+		> div {
+			display: flex;
+			align-items: center;
+			gap: 0.25rem;
+		}
+	}
+	> div:nth-child(2) {
+		margin: 1.25rem 0;
+	}
+	> div:nth-child(3) {
+		display: grid;
+		grid-auto-flow: column;
+		place-content: end;
+		gap: 8px;
+	}
+}
+
+.meetings {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 16px 16px;
+	align-items: start;
+	.date {
+		padding-top: 4px;
+	}
+	.time {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+}
