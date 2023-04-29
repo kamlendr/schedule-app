@@ -1,25 +1,54 @@
 import { Button, CircularProgress, TextField } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { meetingContext } from '../App';
+import axios from 'axios';
 
 const UserForm = ({ onSuccess }) => {
 	const {
 		form: { data },
+		closeModal,
 	} = useContext(meetingContext);
 	const [fields, setFields] = useState(() => ({ userName: data?.userName ?? '', userEmail: data?.userEmail ?? '', userId: data?.userId ?? '' }));
+	const [isLoading, setIsLoading] = useState(false);
+	const [errors, setErrors] = useState({});
 	const { userName, userEmail, userId } = fields;
 
 	const handleChange = (e) => {
+		setErrors({});
 		setFields((v) => ({ ...v, [e.target.name]: e.target.value }));
 	};
 
+	const validate = () => {
+		const err = {};
+		if (!userName) {
+			err.userName = 'User Name is required';
+		}
+		if (!userEmail) {
+			err.userEmail = 'User Email is required';
+		} else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userEmail)) {
+			err.userEmail = 'Please Enter Valid Email Id';
+		}
+		if (!userId) {
+			err.userId = 'User Id is required';
+		}
+		return err;
+	};
+
 	const handleSubmit = async () => {
-		const headers = new Headers({
-			'Content-Type': 'application/json',
-		});
+		const errs = validate();
+		setErrors(errs);
+		if (Object.keys(errs).length) {
+			return;
+		}
+		setIsLoading(true);
 		try {
-			const res = fetch('', { headers, body: JSON.stringify(fields), method: 'post' });
-		} catch (error) {}
+			await axios.post('/api/v1/users/add-user', fields);
+			closeModal();
+		} catch (error) {
+			console.log(error.response.data.message || error.message);
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -27,14 +56,14 @@ const UserForm = ({ onSuccess }) => {
 			<div className='user-form'>
 				<h4> {data ? 'Edit User Details' : 'Register New User'}</h4>
 				<div>
-					<TextField onChange={handleChange} value={userName} name='userName' label='Name' />
-					<TextField onChange={handleChange} value={userId} name='userId' label='User Id' />
-					<TextField type='email' onChange={handleChange} value={userEmail} name='userEmail' label='Email' />
-					<Button disabled={!Boolean(userName && userEmail && userId)} onClick={handleSubmit} variant='contained' color='success'>
+					<TextField error={errors.userName} onChange={handleChange} value={userName} name='userName' label='Name' />
+					<TextField error={errors.userId} onChange={handleChange} value={userId} name='userId' label='User Id' />
+					<TextField error={errors.userEmail} type='email' onChange={handleChange} value={userEmail} name='userEmail' label='Email' />
+					<Button sx={{ marginTop: '0.25rem' }} disabled={isLoading} onClick={handleSubmit} variant='contained' color='success'>
 						{data ? 'Update' : 'Submit'}
 					</Button>
 				</div>
-				{false ? (
+				{isLoading ? (
 					<div className='busy-overlay'>
 						<CircularProgress />
 					</div>

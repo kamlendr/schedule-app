@@ -17,7 +17,7 @@ export const meetingContext = React.createContext()
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
-  const [formState, setFormState] = React.useState({ show: false, type: "", data: null });
+  const [formState, setFormState] = React.useState({ show: true, type: "", data: null });
   const handleOpen = (formType, formData) => setFormState({ show: true, type: formType, data: formData });
   const handleClose = () => setFormState(prev => ({ ...prev, show: false }));
 
@@ -39,7 +39,7 @@ function App() {
     try {
       const res = await axios("/api/v1/users/get-all-users")
       if (!res?.data?.success) {
-        throw new Error("something went wrong")
+        throw new Error(res?.data?.message || 'Something went wrong')
       }
       dispatch(getUsers({ data: res.data.data, loading: false, error: false }))
     } catch (error) {
@@ -47,14 +47,14 @@ function App() {
     }
   }
 
+
+
   React.useEffect(() => {
     getUsersReq()
-    return () => {
-    }
   }, [])
 
   return (
-    <meetingContext.Provider value={{ openModal: handleOpen, form: formState }} >
+    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: formState }} >
       <div className="App">
         <div  >
           <h3 style={{ textAlign: "center" }} >
