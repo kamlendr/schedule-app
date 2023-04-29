@@ -4,9 +4,12 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import GroupsIcon from '@mui/icons-material/Groups';
 import Button from '@mui/material/Button';
+import reducer from './reducer';
+import { initState } from './constant';
 
 function App() {
-
+  const [state, dispatch] = React.useReducer(reducer, initState)
+  
   return (
     <>
       <div className="App">
