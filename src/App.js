@@ -6,10 +6,34 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import Button from '@mui/material/Button';
 import reducer from './reducer';
 import { initState } from './constant';
+import { getUsers } from './actions';
+import axios from 'axios';
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
-  
+
+
+  const getUsersReq = async () => {
+    try {
+      const res = await axios("/api/v1/users/get-all-users")
+      if (!res?.data?.success) {
+        throw new Error("something went wrong")
+      }
+      dispatch(getUsers({ data: res.data.data, loading: false, error: false }))
+    } catch (error) {
+      throw error
+    }
+  }
+
+  React.useEffect(() => {
+    getUsersReq()
+    return () => {
+    }
+  }, [])
+
+
+
+
   return (
     <>
       <div className="App">
@@ -54,6 +78,7 @@ function App() {
           </Button>
         </div>
       </div>
+      
     </>
   );
 }
