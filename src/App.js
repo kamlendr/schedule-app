@@ -6,7 +6,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import Button from '@mui/material/Button';
 import reducer from './reducer';
 import Backdrop from '@mui/material/Backdrop';
-import { initState } from './constant';
+import { MEETING_FORM, ROOM_FORM, USER_FORM, initState } from './constant';
 import { getRooms, getUsers, showAlert } from './actions';
 import axios from 'axios';
 import UserSection from './Components/UserSection';
@@ -18,6 +18,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import RoomSection from './Components/RoomSection';
 import RoomForm from './Components/RoomForm';
+import MeetingForm from './Components/MeetingForm';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -27,7 +28,7 @@ export const meetingContext = React.createContext()
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
-  const [formState, setFormState] = React.useState({ show: false, type: "", data: null });
+  const [formState, setFormState] = React.useState({ show: true, type: MEETING_FORM, data: null });
   const handleOpen = (formType, formData) => setFormState({ show: true, type: formType, data: formData });
   const handleClose = () => setFormState(prev => ({ ...prev, show: false }));
 
@@ -36,11 +37,9 @@ function App() {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    // width: 400,
     bgcolor: 'background.paper',
-    // border: '2px solid #000',
+    outline: "none",
     boxShadow: 24,
-    // p: 2,
   };
 
 
@@ -96,13 +95,13 @@ function App() {
           </main>
         </div>
         <div>
-          <Button onClick={() => handleOpen('user')} variant='outlined' startIcon={<PersonAddIcon />}>
+          <Button onClick={() => handleOpen(USER_FORM)} variant='outlined' startIcon={<PersonAddIcon />}>
             Add New User
           </Button>
-          <Button variant='contained' startIcon={<GroupsIcon />}>
+          <Button onClick={() => handleOpen(MEETING_FORM)} variant='contained' startIcon={<GroupsIcon />}>
             Schedule a meeting
           </Button>
-          <Button onClick={() => handleOpen('room')} variant='outlined' startIcon={<MeetingRoomIcon />}>
+          <Button onClick={() => handleOpen(ROOM_FORM)} variant='outlined' startIcon={<MeetingRoomIcon />}>
             Add New Room
           </Button>
         </div>
@@ -121,7 +120,7 @@ function App() {
         >
           <Fade in={formState.show}>
             <Box sx={style}>
-              {formState.type === 'user' ? <UserForm /> : formState.type === 'room' ? <RoomForm /> : null}
+              {formState.type === USER_FORM ? <UserForm /> : formState.type === ROOM_FORM ? <RoomForm /> : formState.type === MEETING_FORM ? <MeetingForm /> : null}
             </Box>
           </Fade>
         </Modal>

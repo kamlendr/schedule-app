@@ -12,6 +12,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { meetingContext } from '../App';
 import { showAlert } from '../actions';
 import axios from 'axios';
+import { ROOM_FORM } from '../constant';
 
 export default function RoomSection(props) {
 	// const { users: rooms = [] } = props;
@@ -75,7 +76,7 @@ export default function RoomSection(props) {
 								<LoadingButton onClick={() => deleteRoom(room.roomId)} loading={isDeleting} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete Room
 								</LoadingButton>
-								<Button onClick={() => openModal('room', room)} variant='contained' startIcon={<EditIcon />}>
+								<Button onClick={() => openModal(ROOM_FORM, room)} variant='contained' startIcon={<EditIcon />}>
 									Edit Room
 								</Button>
 							</div>

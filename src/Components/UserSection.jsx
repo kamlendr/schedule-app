@@ -13,6 +13,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { meetingContext } from '../App';
 import { showAlert } from '../actions';
 import axios from 'axios';
+import { USER_FORM } from '../constant';
 
 export default function UserSection(props) {
 	const { users = [] } = props;
@@ -74,7 +75,7 @@ export default function UserSection(props) {
 								<LoadingButton onClick={() => deleteUser(user.userId)} loading={isDeleting} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete User
 								</LoadingButton>
-								<Button onClick={() => openModal('user', user)} variant='contained' startIcon={<EditIcon />}>
+								<Button onClick={() => openModal(USER_FORM, user)} variant='contained' startIcon={<EditIcon />}>
 									Edit User
 								</Button>
 							</div>

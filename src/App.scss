@@ -104,6 +104,34 @@
 	}
 }
 
+.meeting-form {
+	display: grid;
+	position: relative;
+	gap: 1.5rem;
+	padding: 1rem 1.5rem;
+
+	.form-fields {
+		display: grid;
+		align-content: start;
+		gap: 20px;
+		padding: 4px;
+		background: white;
+	}
+	.select-form-fields {
+		display: grid;
+		align-content: start;
+		gap: 20px;
+		padding: 4px;
+		background: white;
+	}
+	.btns {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-auto-flow: column;
+		gap: 0.5rem;
+	}
+}
+
 .busy-overlay {
 	position: absolute;
 	inset: 0;
@@ -114,4 +142,12 @@
 .user-submit-loader {
 	position: relative;
 	bottom: 60px;
+}
+
+.stacked {
+	display: grid;
+	& > * {
+		grid-column: 1/2;
+		grid-row: 1/2;
+	}
 }
