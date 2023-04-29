@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Accordion from '@mui/material/Accordion';
+import dayjs from 'dayjs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -14,8 +15,7 @@ import { showAlert } from '../actions';
 import axios from 'axios';
 import { ROOM_FORM } from '../constant';
 
-export default function RoomSection(props) {
-	// const { users: rooms = [] } = props;
+export default function RoomSection() {
 	const {
 		openModal,
 		dispatch,
@@ -23,6 +23,25 @@ export default function RoomSection(props) {
 	} = React.useContext(meetingContext);
 
 	const [isDeleting, setIsDeleting] = React.useState(false);
+	const [meetings, setMeetings] = React.useState(false);
+	const DEFAULT_OPEN_INDEX = 0;
+	const getRoomMeetingsReq = async (roomId) => {
+		const options = {
+			baseURL: '/api/v1/schedule/get-meetings/room',
+			params: {
+				roomId,
+			},
+		};
+		try {
+			const res = await axios.request(options);
+			if (!res?.data?.success) {
+				throw new Error(res?.data?.message || 'Something went wrong');
+			}
+			setMeetings((prev) => ({ ...prev, [roomId]: res.data.data }));
+		} catch (error) {
+			throw error;
+		}
+	};
 
 	const deleteRoom = async (id) => {
 		setIsDeleting(true);
@@ -36,13 +55,18 @@ export default function RoomSection(props) {
 		}
 	};
 
+	React.useEffect(() => {
+		const defaultOpenRoomId = rooms?.data?.[DEFAULT_OPEN_INDEX]?.roomId;
+		if (defaultOpenRoomId && !meetings[defaultOpenRoomId]) getRoomMeetingsReq(defaultOpenRoomId);
+	}, [rooms?.data]);
+
 	return (
 		<div>
 			{rooms.data.map((room, i) => {
 				const { _id, roomId, roomName } = room ?? {};
 
 				return (
-					<Accordion key={_id} defaultExpanded={i === 0}>
+					<Accordion onChange={(_, expanded) => expanded && !meetings[roomId] && getRoomMeetingsReq(roomId)} key={_id} defaultExpanded={i === DEFAULT_OPEN_INDEX}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
 							<Typography fontWeight={700}>{roomName}</Typography>
 						</AccordionSummary>
@@ -53,30 +77,31 @@ export default function RoomSection(props) {
 								</div>
 							</div>
 							<div>
-								{true ? (
+								{!meetings[roomId] ? (
+									'Loading'
+								) : meetings[roomId].length ? (
 									<div className='meetings'>
-										<div className='date'>25/09/2023</div>
-										<div>
-											<Chip label='Small' size='small' />
-										</div>
-										<div className='date'>08/25/2023</div>
-										<div className='time'>
-											<Chip label='12:35 pm - 02:35 pm' size='small' />
-											<Chip label='Small' size='small' />
-											<Chip label='Small' size='small' />
-											<Chip label='Small' size='small' />
-											<Chip label='Small' size='small' />
-										</div>
+										{meetings[roomId].map(({ _id, guestRooms, roomId, meetingDate, startTime, endTime }) => (
+											<div style={{ display: 'contents' }} key={'hg'}>
+												<div className='date'>{dayjs(meetingDate).format('YYYY-MM-DD')}</div>
+												<div>
+													<Button sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => {}}>
+														{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
+													</Button>
+												</div>
+											</div>
+										))}
 									</div>
 								) : (
 									'No Meeting Found'
 								)}
 							</div>
+
 							<div>
-								<LoadingButton onClick={() => deleteRoom(room.roomId)} loading={isDeleting} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
+								<LoadingButton sx={{ borderRadius: '0px', padding: '2px 8px' }} color='error' onClick={() => deleteRoom(room.roomId)} loading={isDeleting} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete Room
 								</LoadingButton>
-								<Button onClick={() => openModal(ROOM_FORM, room)} variant='contained' startIcon={<EditIcon />}>
+								<Button sx={{ borderRadius: '0px', padding: '2px 8px' }} color='success' size='small' variant='outlined' onClick={() => openModal(ROOM_FORM, room)} startIcon={<EditIcon />}>
 									Edit Room
 								</Button>
 							</div>

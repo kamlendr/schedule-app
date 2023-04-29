@@ -28,7 +28,7 @@ export const meetingContext = React.createContext()
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
-  const [formState, setFormState] = React.useState({ show: true, type: MEETING_FORM, data: null });
+  const [formState, setFormState] = React.useState({ show: false, type: '', data: null });
   const handleOpen = (formType, formData) => setFormState({ show: true, type: formType, data: formData });
   const handleClose = () => setFormState(prev => ({ ...prev, show: false }));
 
@@ -83,7 +83,7 @@ function App() {
             Users
           </h3>
           <main>
-            <UserSection users={state.users.data} />
+            <UserSection />
           </main>
         </div>
         <div  >
