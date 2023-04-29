@@ -8,6 +8,7 @@ import reducer from './reducer';
 import { initState } from './constant';
 import { getUsers } from './actions';
 import axios from 'axios';
+import UserSection from './Components/UserSection';
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
@@ -41,24 +42,9 @@ function App() {
           <h3 style={{ textAlign: "center" }} >
             Users
           </h3>
-          <div>
-            user 1
-          </div>
-          <div>
-            user 2
-          </div>
-          <div>
-            user 3
-          </div>
-          <div>
-            user 4
-          </div>
-          <div>
-            user 5
-          </div>
-          <div>
-            user 6
-          </div>
+          <main>
+            <UserSection users={state.users.data} />
+          </main>
 
         </div>
         <div  >
@@ -78,7 +64,7 @@ function App() {
           </Button>
         </div>
       </div>
-      
+
     </>
   );
 }
