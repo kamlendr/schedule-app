@@ -11,6 +11,7 @@ import { getUsers } from './actions';
 import axios from 'axios';
 import UserSection from './Components/UserSection';
 import { Box, Fade, Modal } from '@mui/material';
+import UserForm from './Components/UserForm';
 
 export const meetingContext = React.createContext()
 
@@ -53,7 +54,7 @@ function App() {
   }, [])
 
   return (
-    <meetingContext.Provider value={{ openModal: handleOpen }} >
+    <meetingContext.Provider value={{ openModal: handleOpen, form: formState }} >
       <div className="App">
         <div  >
           <h3 style={{ textAlign: "center" }} >
@@ -95,7 +96,7 @@ function App() {
         >
           <Fade in={formState.show}>
             <Box sx={style}>
-              hello world
+              <UserForm />
             </Box>
           </Fade>
         </Modal>
