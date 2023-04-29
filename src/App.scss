@@ -84,3 +84,33 @@
 		gap: 8px;
 	}
 }
+
+.user-form {
+	// background: red;
+	display: inline-block;
+	position: relative;
+	padding: 2rem;
+	h4 {
+		margin-bottom: 24px;
+	}
+	> div {
+		display: grid;
+		flex-direction: column;
+		gap: 20px;
+		// div {
+		// 	margin-bottom: 4px;
+		// }
+	}
+}
+
+.busy-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.216);
+	display: grid;
+	place-content: center;
+}
+.user-submit-loader {
+	position: relative;
+	bottom: 60px;
+}
