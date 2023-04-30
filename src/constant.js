@@ -5,6 +5,8 @@ export const SHOW_ALERT = "SHOW_ALERT"
 export const MEETING_FORM = "MEETING_FORM"
 export const USER_FORM = "USER_FORM"
 export const ROOM_FORM = "ROOM_FORM"
+export const USER_TAB = "USER_TAB"
+export const ROOM_TAB = "ROOM_TAB"
 
 export const initState = {
   users: {

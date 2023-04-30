@@ -71,7 +71,7 @@ export default function RoomSection() {
 							<Typography fontWeight={700}>{roomName}</Typography>
 						</AccordionSummary>
 						<AccordionDetails className='accordion-details'>
-							<div className=''>
+							<div style={{ color: 'rgb(134,134,134)' }}>
 								<div>
 									<LocationOnIcon /> {roomId}
 								</div>

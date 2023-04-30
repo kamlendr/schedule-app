@@ -73,7 +73,7 @@ export default function UserSection(props) {
 							<Typography fontWeight={700}>{userName}</Typography>
 						</AccordionSummary>
 						<AccordionDetails className='accordion-details'>
-							<div className=''>
+							<div style={{ color: 'rgb(134,134,134)' }}>
 								<div>
 									<AccountCircleIcon /> {userId}
 								</div>

@@ -12,35 +12,47 @@
 	scrollbar-width: none; /* Firefox */
 }
 
+$columnGap: 2rem;
 .App {
 	background: rgba(189, 188, 187, 0.158);
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	column-gap: 2rem;
+	grid-template-rows: auto 1fr auto;
+
+	column-gap: $columnGap;
 	// place-content: center;
-	row-gap: 1rem;
+	row-gap: 0.5rem;
 
 	padding: 1rem;
+	padding-top: 0.5rem;
 	height: 100vh;
 	overflow: hidden;
-	> div:first-child {
-		padding: 0.5rem;
+	> div {
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
-		> main {
-			flex-grow: 1;
-			overflow: auto;
-			padding: 4px;
-		}
+		overflow: scroll;
+
+		// > main {
+		// 	flex-grow: 1;
+		// 	overflow: auto;
+		// 	padding: 4px;
+		// }
 	}
+
 	> div:last-child {
 		grid-column: span 2;
 		display: grid;
 		grid-auto-flow: column;
 		align-content: end;
 		gap: 0.25rem;
+	}
+	> div:first-child {
+		grid-column: span 2;
+		// display: grid;
+		grid-auto-flow: column;
+		align-content: end;
+		// gap: 0.25rem;
 	}
 }
 .accordion-details {
@@ -49,6 +61,7 @@
 	> div:first-child {
 		display: flex;
 		align-items: center;
+		flex-wrap: wrap;
 		gap: 1rem;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.212);
 		padding-bottom: 0.5rem;
@@ -150,4 +163,37 @@
 		grid-column: 1/2;
 		grid-row: 1/2;
 	}
+}
+
+.tabs {
+	display: grid;
+	grid-auto-flow: column;
+	position: relative;
+	gap: $columnGap;
+	text-transform: uppercase;
+	text-align: center;
+	padding: 0.5rem;
+	// place-content: center;
+	h4 {
+		cursor: pointer;
+	}
+	.selection-bar {
+		position: absolute;
+		width: 50%;
+		bottom: 0;
+		height: 2px;
+		background: #1976d2;
+		transition: transform 0.25s;
+	}
+}
+.meet-btn {
+	background: #1976d2;
+	color: #fff;
+	padding: 1rem;
+	display: inline-flex;
+	align-items: center;
+	text-transform: uppercase;
+	gap: 0.5rem;
+	justify-content: center;
+	border-radius: 99999999px;
 }
