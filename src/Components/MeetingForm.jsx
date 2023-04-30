@@ -163,15 +163,17 @@ const MeetingForm = ({ onSuccess }) => {
 						<FormControl sx={{ width: 300 }}>
 							<InputLabel id='multiple-checkbox-label'>Invite guests</InputLabel>
 							<Select labelId='multiple-checkbox-label' id='multiple-checkbox' multiple value={guestUsers} onChange={(e) => handleChange('guestUsers', e.target.value)} input={<OutlinedInput label='Invite guests' />} renderValue={(selected) => selected.join(', ')} MenuProps={MenuProps}>
-								{users.data.map((user) => {
-									const { _id, userId, userName } = user;
-									return (
-										<MenuItem key={_id} value={userId}>
-											<Checkbox checked={guestUsers.includes(userId)} />
-											<ListItemText primary={userName} />
-										</MenuItem>
-									);
-								})}
+								{users.data
+									.filter((user) => user.userId !== userId)
+									.map((user) => {
+										const { _id, userId, userName } = user;
+										return (
+											<MenuItem key={_id} value={userId}>
+												<Checkbox checked={guestUsers.includes(userId)} />
+												<ListItemText primary={userName} />
+											</MenuItem>
+										);
+									})}
 							</Select>
 						</FormControl>
 					</div>
