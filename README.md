@@ -21,3 +21,7 @@ You can change the port where your backened server is running in package.json fi
 "proxy": "http://localhost:3000"
 ```
 Currently, it is set as above. It proxies the api requests generating from the react server, running at port  3003, to a backend server which is running at port 3000 on local machine. 
+
+Screenshots:
+
+![My project-1](https://user-images.githubusercontent.com/77038673/235372631-ad62b224-d5c9-4f83-93db-1534f975c6eb.png)
