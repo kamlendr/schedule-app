@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import { Button, Chip } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { meetingContext } from '../App';
@@ -25,6 +27,7 @@ export default function RoomSection() {
 	} = React.useContext(meetingContext);
 
 	const [isDeleting, setIsDeleting] = React.useState(null);
+	const [isLoading, setIsLoading] = React.useState(null);
 	const [meetings, setMeetings] = React.useState(false);
 	const DEFAULT_OPEN_INDEX = 0;
 	const getRoomMeetingsReq = async (roomId) => {
@@ -35,6 +38,7 @@ export default function RoomSection() {
 			},
 		};
 		try {
+			setIsLoading([roomId]);
 			const res = await axios.request(options);
 			if (!res?.data?.success) {
 				throw new Error(res?.data?.message || 'Something went wrong');
@@ -51,6 +55,8 @@ export default function RoomSection() {
 			setMeetings((prev) => ({ ...prev, [roomId]: data }));
 		} catch (error) {
 			throw error;
+		} finally {
+			setIsLoading([]);
 		}
 	};
 
@@ -85,14 +91,18 @@ export default function RoomSection() {
 	React.useEffect(() => {
 		// console.log(roomsToBeUpdated);
 		const fetchMeetings = roomsToBeUpdated.filter((room) => room in meetings);
-		axios.all(fetchMeetings.map((roomId) => axios.get(`/api/v1/schedule/get-meetings/room?roomId=${roomId}`))).then((res) => {
-			let meets = {};
-			res.forEach((v) => {
-				let roomId = new URL(v.request.responseURL).searchParams.get('roomId');
-				meets[roomId] = v.data.data.reduce(groupByDate, {});
-			});
-			setMeetings((prev) => ({ ...prev, ...meets }));
-		});
+		setIsLoading(fetchMeetings);
+		axios
+			.all(fetchMeetings.map((roomId) => axios.get(`/api/v1/schedule/get-meetings/room?roomId=${roomId}`)))
+			.then((res) => {
+				let meets = {};
+				res.forEach((v) => {
+					let roomId = new URL(v.request.responseURL).searchParams.get('roomId');
+					meets[roomId] = v.data.data.reduce(groupByDate, {});
+				});
+				setMeetings((prev) => ({ ...prev, ...meets }));
+			})
+			.finally(() => setIsLoading([]));
 	}, [roomsToBeUpdated]);
 
 	return (
@@ -110,10 +120,17 @@ export default function RoomSection() {
 								<div>
 									<LocationOnIcon /> {roomId}
 								</div>
+								<article>
+									{isLoading?.includes?.(roomId) ? (
+										<Box sx={{ width: '100%' }}>
+											<LinearProgress color='error' />
+										</Box>
+									) : null}
+								</article>
 							</div>
 							<div>
 								{!meetings[roomId] ? (
-									'Loading'
+									'Fetching meeting details...'
 								) : Object.keys(meetings[roomId]).length ? (
 									<div className='meetings'>
 										{Object.entries(meetings[roomId]).map(([key, val]) => {

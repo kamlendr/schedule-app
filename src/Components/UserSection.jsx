@@ -11,6 +11,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Button, Chip } from '@mui/material';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import { meetingContext } from '../App';
 import { updateMeetings, showAlert } from '../actions';
 import axios from 'axios';
@@ -26,6 +28,7 @@ export default function UserSection(props) {
 	} = React.useContext(meetingContext);
 	const [isDeleting, setIsDeleting] = React.useState(null);
 	const [meetings, setMeetings] = React.useState(false);
+	const [isLoading, setIsLoading] = React.useState(null);
 	const DEFAULT_OPEN_INDEX = 0;
 
 	const deleteUser = async (id) => {
@@ -66,11 +69,14 @@ export default function UserSection(props) {
 		};
 
 		try {
+			setIsLoading([userId]);
 			const res = await axios.request(options);
 			const data = res.data.data.reduce(groupByDate, {});
 			setMeetings((prev) => ({ ...prev, [userId]: data }));
 		} catch (error) {
 			throw error;
+		} finally {
+			setIsLoading([]);
 		}
 	};
 
@@ -81,14 +87,18 @@ export default function UserSection(props) {
 
 	React.useEffect(() => {
 		const fetchMeetings = usersToBeUpdated.filter((user) => user in meetings);
-		axios.all(fetchMeetings.map((userId) => axios.get(`/api/v1/schedule/get-meetings/user?userId=${userId}`))).then((res) => {
-			let meets = {};
-			res.forEach((v) => {
-				let userId = new URL(v.request.responseURL).searchParams.get('userId');
-				meets[userId] = v.data.data.reduce(groupByDate, {});
-			});
-			setMeetings((prev) => ({ ...prev, ...meets }));
-		});
+		setIsLoading(fetchMeetings);
+		axios
+			.all(fetchMeetings.map((userId) => axios.get(`/api/v1/schedule/get-meetings/user?userId=${userId}`)))
+			.then((res) => {
+				let meets = {};
+				res.forEach((v) => {
+					let userId = new URL(v.request.responseURL).searchParams.get('userId');
+					meets[userId] = v.data.data.reduce(groupByDate, {});
+				});
+				setMeetings((prev) => ({ ...prev, ...meets }));
+			})
+			.finally(() => setIsLoading([]));
 	}, [usersToBeUpdated]);
 
 	return (
@@ -108,10 +118,17 @@ export default function UserSection(props) {
 								<div>
 									<MarkunreadIcon /> {userEmail}
 								</div>
+								<article>
+									{isLoading?.includes?.(userId) ? (
+										<Box sx={{ width: '100%' }}>
+											<LinearProgress />
+										</Box>
+									) : null}
+								</article>
 							</div>
 							<div>
 								{!meetings[userId] ? (
-									'Loading'
+									'Fetching meeting details...'
 								) : Object.keys(meetings[userId]).length ? (
 									<div className='meetings'>
 										{Object.entries(meetings[userId]).map(([key, val]) => {
