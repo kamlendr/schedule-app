@@ -23,7 +23,7 @@ export const initState = {
     error: false,
     loading: false
   },
-  roomToBeUpdated: "",
+  roomsToBeUpdated: [],
   usersToBeUpdated: [],
   alert: { show: false, severity: "success", msg: "hello world" }
 }

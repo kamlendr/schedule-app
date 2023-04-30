@@ -11,16 +11,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import { Button, Chip } from '@mui/material';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { meetingContext } from '../App';
-import { showAlert } from '../actions';
+import { showAlert, updateMeetings } from '../actions';
 import axios from 'axios';
 import { ROOM_FORM } from '../constant';
+import { groupByDate } from '../utils/common';
 
 export default function RoomSection() {
 	const {
 		openModal,
 		dispatch,
-		state: { rooms },
-    getRoomsReq
+		state: { rooms, roomsToBeUpdated },
+		getRoomsReq,
 	} = React.useContext(meetingContext);
 
 	const [isDeleting, setIsDeleting] = React.useState(null);
@@ -57,7 +58,17 @@ export default function RoomSection() {
 		setIsDeleting(id);
 		try {
 			await axios.delete(`/api/v1/room/${id}`);
-      await getRoomsReq()
+			/*to notify all users who were part of the meeting that was to take place in this room*/
+			let guestsInAllMeetings = [];
+			for (let key in meetings[id]) {
+				meetings[id][key].forEach((v) => {
+					guestsInAllMeetings.push(v.guestUsers);
+				});
+			}
+			const uniqueGuests = new Set(guestsInAllMeetings.flat());
+			guestsInAllMeetings = Array.from(uniqueGuests);
+			dispatch(updateMeetings({ guestUsers: guestsInAllMeetings, roomId: [] }));
+			await getRoomsReq();
 			dispatch(showAlert({ show: true, severity: 'success', msg: 'Room deleted successsfully' }));
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error?.response?.data?.message || error.message }));
@@ -70,6 +81,19 @@ export default function RoomSection() {
 		const defaultOpenRoomId = rooms?.data?.[DEFAULT_OPEN_INDEX]?.roomId;
 		if (defaultOpenRoomId && !meetings[defaultOpenRoomId]) getRoomMeetingsReq(defaultOpenRoomId);
 	}, [rooms?.data]);
+
+	React.useEffect(() => {
+		// console.log(roomsToBeUpdated);
+		const fetchMeetings = roomsToBeUpdated.filter((room) => room in meetings);
+		axios.all(fetchMeetings.map((roomId) => axios.get(`/api/v1/schedule/get-meetings/room?roomId=${roomId}`))).then((res) => {
+			let meets = {};
+			res.forEach((v) => {
+				let roomId = new URL(v.request.responseURL).searchParams.get('roomId');
+				meets[roomId] = v.data.data.reduce(groupByDate, {});
+			});
+			setMeetings((prev) => ({ ...prev, ...meets }));
+		});
+	}, [roomsToBeUpdated]);
 
 	return (
 		<div>

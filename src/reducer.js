@@ -11,7 +11,7 @@ const reducer = (state, action) => {
       const meeting = action.payload;
       // const usersToBeUpdated = meeting.guestUsers.filter(user => user in state.meetingsForUsers)
       return {
-        ...state, usersToBeUpdated: meeting.guestUsers, roomToBeUpdated: meeting.roomId
+        ...state, usersToBeUpdated: meeting.guestUsers, roomsToBeUpdated: [meeting.roomId].flat()
       }
     default:
       return state;

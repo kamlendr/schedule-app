@@ -7,7 +7,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import React, { useContext, useState } from 'react';
 import { meetingContext } from '../App';
 import axios from 'axios';
-import { addNewMeetings, showAlert } from '../actions';
+import { updateMeetings, showAlert } from '../actions';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -91,7 +91,7 @@ const MeetingForm = ({ onSuccess }) => {
 
 		try {
 			const res = await axios.post('api/v1/schedule/create-meeting', payload);
-			dispatch(addNewMeetings(res.data.data));
+			dispatch(updateMeetings(res.data.data));
 			closeModal();
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error.response.data.message || error.message }));
@@ -101,7 +101,6 @@ const MeetingForm = ({ onSuccess }) => {
 	};
 
 	const handleBackClick = () => {
-		// clearErrors();
 		if (step === 1) {
 			closeModal();
 		} else {

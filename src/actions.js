@@ -13,7 +13,7 @@ export const showAlert = (payload) => ({
   payload
 })
 
-export const addNewMeetings = (payload) => ({
+export const updateMeetings = (payload) => ({
   type: ADD_MEETINGS,
   payload
 })

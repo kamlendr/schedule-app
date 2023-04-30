@@ -12,7 +12,7 @@ import { Button, Chip } from '@mui/material';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { meetingContext } from '../App';
-import { addNewMeetings, showAlert } from '../actions';
+import { updateMeetings, showAlert } from '../actions';
 import axios from 'axios';
 import { USER_FORM } from '../constant';
 import { groupByDate } from '../utils/common';
@@ -32,16 +32,22 @@ export default function UserSection(props) {
 		setIsDeleting(id);
 		try {
 			await axios.delete(`/api/v1/users/${id}`);
-			let guestsInAllMeetings = [];
-			for (let key in meetings[id]) {
-				meetings[id][key].forEach((v) => guestsInAllMeetings.push(v.guestUsers));
-			}
-      const uniqueGuests = new Set(guestsInAllMeetings.flat())
-      uniqueGuests.delete(id)
-			guestsInAllMeetings = Array.from(uniqueGuests);
-      console.log(guestsInAllMeetings);
+			/*to notify all users and rooms who will be affected by this user's deletion */
 
-			dispatch(addNewMeetings({guestUsers: guestsInAllMeetings,roomId:98}));
+			let guestsInAllMeetings = [];
+			let roomsForAllMeetings = [];
+			for (let key in meetings[id]) {
+				meetings[id][key].forEach((v) => {
+					guestsInAllMeetings.push(v.guestUsers);
+					roomsForAllMeetings.push(v.roomId);
+				});
+			}
+			const uniqueGuests = new Set(guestsInAllMeetings.flat());
+			uniqueGuests.delete(id);
+			guestsInAllMeetings = Array.from(uniqueGuests);
+			console.log(guestsInAllMeetings);
+
+			dispatch(updateMeetings({ guestUsers: guestsInAllMeetings, roomId: roomsForAllMeetings }));
 			await getUsersReq();
 			dispatch(showAlert({ show: true, severity: 'success', msg: 'User deleted successsfully' }));
 		} catch (error) {
