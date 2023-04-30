@@ -4,7 +4,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { meetingContext } from '../App';
 import axios from 'axios';
 import { updateMeetings, showAlert } from '../actions';
@@ -32,17 +32,15 @@ const MeetingForm = ({ onSuccess }) => {
 		closeModal,
 		dispatch,
 		state: { users },
-		getUsersReq,
 	} = useContext(meetingContext);
 	const [fields, setFields] = useState({ data: { roomId: '', userId: '', meetingDate: dayjs(), startTime: dayjs().add(15, 'minute'), endTime: dayjs().endOf('day'), guestUsers: [] }, errors: {} });
 	const [isLoading, setIsLoading] = useState(false);
 	const [step, setStep] = useState(1);
-	const totalStep = 3;
 	const {
 		data: { roomId, userId, meetingDate, startTime, endTime, guestUsers },
 		errors,
 	} = fields;
-
+	const totalSteps = useMemo(() => (users.data.length > 1 ? 3 : 2), [users.data]);
 	const handleChange = (key, val, err = {}) => {
 		setFields((prev) => {
 			const newFields = { ...prev, data: { ...prev.data, [key]: val } };
@@ -114,7 +112,7 @@ const MeetingForm = ({ onSuccess }) => {
 		if (Object.keys(errs).length) {
 			return;
 		}
-		if (step < totalStep) {
+		if (step < totalSteps) {
 			validate();
 			setStep((v) => v + 1);
 		} else {
@@ -184,7 +182,7 @@ const MeetingForm = ({ onSuccess }) => {
 						Back
 					</Button>
 					<Button sx={{ marginTop: '0.25rem' }} disabled={isLoading} onClick={handleNextClick} variant='contained' color='success'>
-						{step !== totalStep ? 'Next' : 'Submit'}
+						{step !== totalSteps ? 'Next' : 'Submit'}
 					</Button>
 				</div>
 				{isLoading ? (

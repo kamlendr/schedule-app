@@ -8,9 +8,7 @@ export const ROOM_FORM = "ROOM_FORM"
 export const USER_TAB = "USER_TAB"
 export const ROOM_TAB = "ROOM_TAB"
 export const GET_MEETINGS_FOR_USER = "GET_MEETINGS_FOR_USER"
-export const ADD_MEETINGS = "ADD_MEETINGS"
-// export const GET_MEETINGS_FOR_USER = "GET_MEETINGS_FOR_USER"
-
+export const UPDATE_MEETINGS = "UPDATE_MEETINGS"
 
 export const initState = {
   users: {

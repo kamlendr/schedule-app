@@ -1,4 +1,4 @@
-import { GET_ROOMS, GET_USERS, SET_MEETINGS, GET_MEETINGS_FOR_USER, SHOW_ALERT, ADD_MEETINGS } from "./constant";
+import { GET_ROOMS, GET_USERS, SHOW_ALERT, UPDATE_MEETINGS } from "./constant";
 
 export const getUsers = (payload) => ({
   type: GET_USERS,
@@ -14,14 +14,6 @@ export const showAlert = (payload) => ({
 })
 
 export const updateMeetings = (payload) => ({
-  type: ADD_MEETINGS,
-  payload
-})
-export const getMeetingsForUser = (payload) => ({
-  type: GET_MEETINGS_FOR_USER,
-  payload
-})
-export const setMeetingsInRooms = (payload) => ({
-  // type: SET_MEETINGS,
+  type: UPDATE_MEETINGS,
   payload
 })

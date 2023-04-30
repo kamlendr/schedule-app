@@ -31,9 +31,8 @@ function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
   const [selectedTabs, setSelectedTabs] = React.useState(defaultTabs)
   const isDesktop = useMediaQuery("(min-width:700px)")
-  // console.log(matches);
   const appRef = React.useRef()
-  const [formState, setFormState] = React.useState({ show: true, type: USER_FORM, data: null });
+  const [modal, setModal] = React.useState({ show: false, content: '', data: null });
   useResizeObserver(
     {
       element: appRef,
@@ -44,8 +43,8 @@ function App() {
       }
     }
   )
-  const handleOpen = (formType, formData) => setFormState({ show: true, type: formType, data: formData });
-  const handleClose = () => setFormState(prev => ({ ...prev, show: false }));
+  const handleOpen = (formType, formData) => setModal({ show: true, content: formType, data: formData });
+  const handleClose = () => setModal(prev => ({ ...prev, show: false }));
 
   const style = {
     position: 'absolute',
@@ -90,7 +89,7 @@ function App() {
   }, [])
 
   return (
-    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: formState, state, dispatch, getUsersReq, getRoomsReq }} >
+    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: modal, state, dispatch, getUsersReq, getRoomsReq }} >
       <div ref={appRef} className="App">
         <div>
           <div className='tabs' >
@@ -110,10 +109,9 @@ function App() {
           <Button onClick={() => handleOpen(USER_FORM)} variant='outlined' startIcon={isDesktop ? <PersonAddIcon /> : null}>
             New User
           </Button>
-          <div onClick={() => handleOpen(MEETING_FORM)} className='meet-btn' >
-            <GroupsIcon />
+          <Button disabled={!(state.users.data.length && state.rooms.data.length)} onClick={() => handleOpen(MEETING_FORM)} color='primary' variant='contained' startIcon={<GroupsIcon />}>
             {isDesktop ? "New Meeting" : ""}
-          </div>
+          </Button>
           <Button onClick={() => handleOpen(ROOM_FORM)} variant='outlined' startIcon={isDesktop ? <MeetingRoomIcon /> : null}>
             New Room
           </Button>
@@ -121,7 +119,7 @@ function App() {
         <Modal
           aria-labelledby="transition-modal-title"
           aria-describedby="transition-modal-description"
-          open={formState.show}
+          open={modal.show}
           onClose={handleClose}
           closeAfterTransition
           slots={{ backdrop: Backdrop }}
@@ -131,9 +129,9 @@ function App() {
             },
           }}
         >
-          <Fade in={formState.show}>
+          <Fade in={modal.show}>
             <Box sx={style}>
-              {formState.type === USER_FORM ? <UserForm /> : formState.type === ROOM_FORM ? <RoomForm /> : formState.type === MEETING_FORM ? <MeetingForm /> : null}
+              {modal.content === USER_FORM ? <UserForm /> : modal.content === ROOM_FORM ? <RoomForm /> : modal.content === MEETING_FORM ? <MeetingForm /> : null}
             </Box>
           </Fade>
         </Modal>
@@ -148,4 +146,3 @@ function App() {
 }
 
 export default App;
-

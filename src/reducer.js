@@ -1,4 +1,4 @@
-import { GET_ROOMS, GET_USERS, SHOW_ALERT, ADD_MEETINGS } from "./constant";
+import { GET_ROOMS, GET_USERS, SHOW_ALERT, UPDATE_MEETINGS } from "./constant";
 const reducer = (state, action) => {
   switch (action.type) {
     case GET_USERS:
@@ -7,9 +7,8 @@ const reducer = (state, action) => {
       return { ...state, rooms: action.payload }
     case SHOW_ALERT:
       return { ...state, alert: action.payload }
-    case ADD_MEETINGS:
+    case UPDATE_MEETINGS:
       const meeting = action.payload;
-      // const usersToBeUpdated = meeting.guestUsers.filter(user => user in state.meetingsForUsers)
       return {
         ...state, usersToBeUpdated: meeting.guestUsers, roomsToBeUpdated: [meeting.roomId].flat()
       }
