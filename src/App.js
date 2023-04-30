@@ -4,6 +4,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import GroupsIcon from '@mui/icons-material/Groups';
 import Button from '@mui/material/Button';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import reducer from './reducer';
 import Backdrop from '@mui/material/Backdrop';
 import { MEETING_FORM, ROOM_FORM, ROOM_TAB, USER_FORM, USER_TAB, initState } from './constant';
@@ -29,8 +30,10 @@ const defaultTabs = [USER_TAB, ROOM_TAB]
 function App() {
   const [state, dispatch] = React.useReducer(reducer, initState)
   const [selectedTabs, setSelectedTabs] = React.useState(defaultTabs)
+  const isDesktop = useMediaQuery("(min-width:700px)")
+  // console.log(matches);
   const appRef = React.useRef()
-  const [formState, setFormState] = React.useState({ show: false, type: '', data: null });
+  const [formState, setFormState] = React.useState({ show: true, type: USER_FORM, data: null });
   useResizeObserver(
     {
       element: appRef,
@@ -46,12 +49,15 @@ function App() {
 
   const style = {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    top: isDesktop ? '50%' : 'auto',
+    left: isDesktop ? '50%' : 'auto',
+    bottom: isDesktop ? 'auto' : '0',
+    transform: isDesktop ? 'translate(-50%, -50%)' : '',
+    width: isDesktop ? 'auto' : '100%',
     bgcolor: 'background.paper',
     outline: "none",
     boxShadow: 24,
+    // minWidth: '400px'
   };
 
   const getUsersReq = async () => {
@@ -88,27 +94,27 @@ function App() {
       <div ref={appRef} className="App">
         <div>
           <div className='tabs' >
-            <h4 onClick={() => window.innerWidth < 700 && setSelectedTabs([USER_TAB])}>Users</h4>
-            <h4 onClick={() => window.innerWidth < 700 && setSelectedTabs([ROOM_TAB])}>Rooms</h4>
+            <h4 onClick={() => !isDesktop && setSelectedTabs([USER_TAB])}>Users</h4>
+            <h4 onClick={() => !isDesktop && setSelectedTabs([ROOM_TAB])}>Rooms</h4>
             <div style={{ transform: selectedTabs.length === 1 ? selectedTabs.includes(USER_TAB) ? "" : "translateX(100%)" : "", background: selectedTabs.length > 1 ? "#00000000" : "" }} className='selection-bar' ></div>
           </div>
         </div>
 
-        <div style={{ gridColumn: selectedTabs.length === 1 && selectedTabs.includes(USER_TAB) ? "1/3" : "", display: !selectedTabs.includes(USER_TAB) ? "none" : "", paddingBottom: "1rem" }} >
+        <div className='users' style={{ gridColumn: selectedTabs.length === 1 && selectedTabs.includes(USER_TAB) ? "1/3" : "", display: !selectedTabs.includes(USER_TAB) ? "none" : "", paddingBottom: "1rem" }} >
           <UserSection />
         </div>
-        <div style={{ gridColumn: selectedTabs.length === 1 && selectedTabs.includes(ROOM_TAB) ? "1/3" : "", display: !selectedTabs.includes(ROOM_TAB) ? "none" : "", paddingBottom: "1rem" }} >
+        <div className='rooms' style={{ gridColumn: selectedTabs.length === 1 && selectedTabs.includes(ROOM_TAB) ? "1/3" : "", display: !selectedTabs.includes(ROOM_TAB) ? "none" : "", paddingBottom: "1rem" }} >
           <RoomSection />
         </div>
         <div>
-          <Button onClick={() => handleOpen(USER_FORM)} variant='outlined' startIcon={<PersonAddIcon />}>
+          <Button onClick={() => handleOpen(USER_FORM)} variant='outlined' startIcon={isDesktop ? <PersonAddIcon /> : null}>
             New User
           </Button>
           <div onClick={() => handleOpen(MEETING_FORM)} className='meet-btn' >
             <GroupsIcon />
-            {false ? "New Meeting" : ""}
+            {isDesktop ? "New Meeting" : ""}
           </div>
-          <Button onClick={() => handleOpen(ROOM_FORM)} variant='outlined' startIcon={<MeetingRoomIcon />}>
+          <Button onClick={() => handleOpen(ROOM_FORM)} variant='outlined' startIcon={isDesktop ? <MeetingRoomIcon /> : null}>
             New Room
           </Button>
         </div>

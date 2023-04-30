@@ -160,7 +160,7 @@ const MeetingForm = ({ onSuccess }) => {
 						</LocalizationProvider>
 					</div>
 					<div style={{ zIndex: step === 3 ? '0' : '-1' }} className='form-fields'>
-						<FormControl sx={{ width: 300 }}>
+						<FormControl sx={{ width: '100%' }}>
 							<InputLabel id='multiple-checkbox-label'>Invite guests</InputLabel>
 							<Select labelId='multiple-checkbox-label' id='multiple-checkbox' multiple value={guestUsers} onChange={(e) => handleChange('guestUsers', e.target.value)} input={<OutlinedInput label='Invite guests' />} renderValue={(selected) => selected.join(', ')} MenuProps={MenuProps}>
 								{users.data

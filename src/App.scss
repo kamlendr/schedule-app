@@ -11,8 +11,9 @@
 	-ms-overflow-style: none; /* IE and Edge */
 	scrollbar-width: none; /* Firefox */
 }
+$breakpoint-tablet: '700px';
 
-$columnGap: 2rem;
+$columnGap: 1.5rem;
 .App {
 	background: rgba(189, 188, 187, 0.158);
 	display: grid;
@@ -54,6 +55,10 @@ $columnGap: 2rem;
 		align-content: end;
 		// gap: 0.25rem;
 	}
+	.rooms,
+	.users {
+		background: #b1afaf1e;
+	}
 }
 .accordion-details {
 	// background: linear-gradient(370deg, rgba(121, 106, 106, 0.171), rgba(255, 255, 0, 0.144));
@@ -62,7 +67,7 @@ $columnGap: 2rem;
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
-    position: relative;
+		position: relative;
 		gap: 1rem;
 		border-bottom: 1px solid rgba(0, 0, 0, 0.212);
 		padding-bottom: 0.5rem;
@@ -74,8 +79,8 @@ $columnGap: 2rem;
 		}
 		> article {
 			position: absolute;
-      width: 100%;
-      bottom: -4px;
+			width: 100%;
+			bottom: -4px;
 		}
 	}
 	> div:nth-child(2) {
@@ -127,6 +132,7 @@ $columnGap: 2rem;
 		// 	margin-bottom: 4px;
 		// }
 	}
+	width: 100%;
 }
 
 .meeting-form {
@@ -207,5 +213,5 @@ $columnGap: 2rem;
 	text-transform: uppercase;
 	gap: 0.5rem;
 	justify-content: center;
-	border-radius: 99999999px;
+	border-radius: 4px;
 }
