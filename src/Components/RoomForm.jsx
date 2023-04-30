@@ -10,6 +10,7 @@ const RoomForm = ({ onSuccess }) => {
 		closeModal,
 		dispatch,
 		state,
+		getRoomsReq,
 	} = useContext(meetingContext);
 	const [fields, setFields] = useState(() => ({ roomName: data?.roomName ?? '' }));
 	const [isLoading, setIsLoading] = useState(false);
@@ -49,6 +50,7 @@ const RoomForm = ({ onSuccess }) => {
 
 		try {
 			await axios.request(options);
+			await getRoomsReq();
 			closeModal();
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error.response.data.message || error.message }));

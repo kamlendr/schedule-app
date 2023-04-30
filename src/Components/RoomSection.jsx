@@ -20,9 +20,10 @@ export default function RoomSection() {
 		openModal,
 		dispatch,
 		state: { rooms },
+    getRoomsReq
 	} = React.useContext(meetingContext);
 
-	const [isDeleting, setIsDeleting] = React.useState(false);
+	const [isDeleting, setIsDeleting] = React.useState(null);
 	const [meetings, setMeetings] = React.useState(false);
 	const DEFAULT_OPEN_INDEX = 0;
 	const getRoomMeetingsReq = async (roomId) => {
@@ -53,14 +54,15 @@ export default function RoomSection() {
 	};
 
 	const deleteRoom = async (id) => {
-		setIsDeleting(true);
+		setIsDeleting(id);
 		try {
 			await axios.delete(`/api/v1/room/${id}`);
+      await getRoomsReq()
 			dispatch(showAlert({ show: true, severity: 'success', msg: 'Room deleted successsfully' }));
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error?.response?.data?.message || error.message }));
 		} finally {
-			setIsDeleting(false);
+			setIsDeleting(null);
 		}
 	};
 
@@ -94,7 +96,7 @@ export default function RoomSection() {
 											return (
 												<div style={{ display: 'contents' }} key={key}>
 													<div className='date'>{key}</div>
-													<div className='timings' >
+													<div className='timings'>
 														{val?.map?.(({ _id, guestUsers, roomId, meetingDate, startTime, endTime }) => (
 															<Button key={_id} sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => {}}>
 																{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
@@ -111,7 +113,7 @@ export default function RoomSection() {
 							</div>
 
 							<div>
-								<LoadingButton sx={{ borderRadius: '0px', padding: '2px 8px' }} color='error' onClick={() => deleteRoom(room.roomId)} loading={isDeleting} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
+								<LoadingButton sx={{ borderRadius: '0px', padding: '2px 8px' }} color='error' onClick={() => deleteRoom(room.roomId)} loading={isDeleting === roomId} loadingPosition='start' size='small' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete Room
 								</LoadingButton>
 								<Button sx={{ borderRadius: '0px', padding: '2px 8px' }} color='success' size='small' variant='outlined' onClick={() => openModal(ROOM_FORM, room)} startIcon={<EditIcon />}>

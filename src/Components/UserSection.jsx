@@ -21,20 +21,22 @@ export default function UserSection(props) {
 		openModal,
 		dispatch,
 		state: { users },
+		getUsersReq,
 	} = React.useContext(meetingContext);
-	const [isDeleting, setIsDeleting] = React.useState(false);
+	const [isDeleting, setIsDeleting] = React.useState(null);
 	const [meetings, setMeetings] = React.useState(false);
 	const DEFAULT_OPEN_INDEX = 0;
 
 	const deleteUser = async (id) => {
-		setIsDeleting(true);
+		setIsDeleting(id);
 		try {
 			await axios.delete(`/api/v1/users/${id}`);
+			await getUsersReq();
 			dispatch(showAlert({ show: true, severity: 'success', msg: 'User deleted successsfully' }));
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error?.response?.data?.message || error.message }));
 		} finally {
-			setIsDeleting(false);
+			setIsDeleting(null);
 		}
 	};
 
@@ -61,8 +63,6 @@ export default function UserSection(props) {
 				}
 				return acc;
 			}, {});
-			console.log(data);
-
 			setMeetings((prev) => ({ ...prev, [userId]: data }));
 		} catch (error) {
 			throw error;
@@ -102,7 +102,7 @@ export default function UserSection(props) {
 											return (
 												<div style={{ display: 'contents' }} key={key}>
 													<div className='date'>{key}</div>
-													<div className='timings' >
+													<div className='timings'>
 														{val?.map?.(({ _id, guestUsers, roomId, meetingDate, startTime, endTime }) => (
 															<Button key={_id} sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => {}}>
 																{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
@@ -118,7 +118,7 @@ export default function UserSection(props) {
 								)}
 							</div>
 							<div>
-								<LoadingButton sx={{ borderRadius: '0px', padding: '2px 8px' }} size='small' color='error' onClick={() => deleteUser(user.userId)} loading={isDeleting} loadingPosition='start' variant='outlined' startIcon={<DeleteIcon />}>
+								<LoadingButton sx={{ borderRadius: '0px', padding: '2px 8px' }} size='small' color='error' onClick={() => deleteUser(user.userId)} loading={isDeleting === userId} loadingPosition='start' variant='outlined' startIcon={<DeleteIcon />}>
 									Delete User
 								</LoadingButton>
 								<Button sx={{ borderRadius: '0px', padding: '2px 8px' }} size='small' color='success' variant='outlined' onClick={() => openModal(USER_FORM, user)} startIcon={<EditIcon />}>

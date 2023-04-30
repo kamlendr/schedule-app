@@ -12,8 +12,6 @@ import axios from 'axios';
 import UserSection from './Components/UserSection';
 import { Box, Fade, Modal } from '@mui/material';
 import UserForm from './Components/UserForm';
-
-import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import RoomSection from './Components/RoomSection';
@@ -86,7 +84,7 @@ function App() {
   }, [])
 
   return (
-    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: formState, state, dispatch }} >
+    <meetingContext.Provider value={{ openModal: handleOpen, closeModal: handleClose, form: formState, state, dispatch, getUsersReq, getRoomsReq }} >
       <div ref={appRef} className="App">
         <div>
           <div className='tabs' >

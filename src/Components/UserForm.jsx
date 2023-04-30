@@ -9,6 +9,7 @@ const UserForm = ({ onSuccess }) => {
 		form: { data },
 		closeModal,
 		dispatch,
+		getUsersReq,
 		state,
 	} = useContext(meetingContext);
 	const [fields, setFields] = useState(() => ({ userName: data?.userName ?? '', userEmail: data?.userEmail ?? '' }));
@@ -55,6 +56,7 @@ const UserForm = ({ onSuccess }) => {
 
 		try {
 			await axios.request(options);
+			await getUsersReq();
 			closeModal();
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error.response.data.message || error.message }));
