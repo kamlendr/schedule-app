@@ -7,7 +7,7 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import React, { useContext, useState } from 'react';
 import { meetingContext } from '../App';
 import axios from 'axios';
-import { showAlert } from '../actions';
+import { addNewMeetings, showAlert } from '../actions';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -32,7 +32,7 @@ const MeetingForm = ({ onSuccess }) => {
 		closeModal,
 		dispatch,
 		state: { users },
-    getUsersReq
+		getUsersReq,
 	} = useContext(meetingContext);
 	const [fields, setFields] = useState({ data: { roomId: '', userId: '', meetingDate: dayjs(), startTime: dayjs().add(15, 'minute'), endTime: dayjs().endOf('day'), guestUsers: [] }, errors: {} });
 	const [isLoading, setIsLoading] = useState(false);
@@ -90,7 +90,8 @@ const MeetingForm = ({ onSuccess }) => {
 		};
 
 		try {
-			await axios.post('api/v1/schedule/create-meeting', payload);
+			const res = await axios.post('api/v1/schedule/create-meeting', payload);
+			dispatch(addNewMeetings(res.data.data));
 			closeModal();
 		} catch (error) {
 			dispatch(showAlert({ show: true, severity: 'error', msg: error.response.data.message || error.message }));
@@ -111,7 +112,6 @@ const MeetingForm = ({ onSuccess }) => {
 	const handleNextClick = () => {
 		const errs = validate();
 		setErrors(errs);
-		console.log(errs);
 		if (Object.keys(errs).length) {
 			return;
 		}

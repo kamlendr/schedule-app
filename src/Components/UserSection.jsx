@@ -12,15 +12,16 @@ import { Button, Chip } from '@mui/material';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { meetingContext } from '../App';
-import { showAlert } from '../actions';
+import { addNewMeetings, showAlert } from '../actions';
 import axios from 'axios';
 import { USER_FORM } from '../constant';
+import { groupByDate } from '../utils/common';
 
 export default function UserSection(props) {
 	const {
 		openModal,
 		dispatch,
-		state: { users },
+		state: { users, usersToBeUpdated },
 		getUsersReq,
 	} = React.useContext(meetingContext);
 	const [isDeleting, setIsDeleting] = React.useState(null);
@@ -31,6 +32,16 @@ export default function UserSection(props) {
 		setIsDeleting(id);
 		try {
 			await axios.delete(`/api/v1/users/${id}`);
+			let guestsInAllMeetings = [];
+			for (let key in meetings[id]) {
+				meetings[id][key].forEach((v) => guestsInAllMeetings.push(v.guestUsers));
+			}
+      const uniqueGuests = new Set(guestsInAllMeetings.flat())
+      uniqueGuests.delete(id)
+			guestsInAllMeetings = Array.from(uniqueGuests);
+      console.log(guestsInAllMeetings);
+
+			dispatch(addNewMeetings({guestUsers: guestsInAllMeetings,roomId:98}));
 			await getUsersReq();
 			dispatch(showAlert({ show: true, severity: 'success', msg: 'User deleted successsfully' }));
 		} catch (error) {
@@ -50,19 +61,7 @@ export default function UserSection(props) {
 
 		try {
 			const res = await axios.request(options);
-			if (!res?.data?.success) {
-				throw new Error(res?.data?.message || 'Something went wrong');
-			}
-
-			const data = res.data.data.reduce((acc, val) => {
-				const key = dayjs(val.meetingDate).format('YYYY-MM-DD');
-				if (acc[key]) {
-					acc[key] = [...acc[key], val];
-				} else {
-					acc[key] = [val];
-				}
-				return acc;
-			}, {});
+			const data = res.data.data.reduce(groupByDate, {});
 			setMeetings((prev) => ({ ...prev, [userId]: data }));
 		} catch (error) {
 			throw error;
@@ -74,11 +73,22 @@ export default function UserSection(props) {
 		if (defaultOpenUserId && !meetings[defaultOpenUserId]) getUserMeetingsReq(defaultOpenUserId);
 	}, [users?.data]);
 
+	React.useEffect(() => {
+		const fetchMeetings = usersToBeUpdated.filter((user) => user in meetings);
+		axios.all(fetchMeetings.map((userId) => axios.get(`/api/v1/schedule/get-meetings/user?userId=${userId}`))).then((res) => {
+			let meets = {};
+			res.forEach((v) => {
+				let userId = new URL(v.request.responseURL).searchParams.get('userId');
+				meets[userId] = v.data.data.reduce(groupByDate, {});
+			});
+			setMeetings((prev) => ({ ...prev, ...meets }));
+		});
+	}, [usersToBeUpdated]);
+
 	return (
 		<div>
 			{users.data.map((user, i) => {
 				const { _id, userId, userName, userEmail } = user ?? {};
-
 				return (
 					<Accordion sx={{ borderLeft: '4px solid #0288d1' }} onChange={(_, expanded) => expanded && !meetings[userId] && getUserMeetingsReq(userId)} key={_id} defaultExpanded={i === DEFAULT_OPEN_INDEX}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
