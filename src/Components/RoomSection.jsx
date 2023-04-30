@@ -37,7 +37,16 @@ export default function RoomSection() {
 			if (!res?.data?.success) {
 				throw new Error(res?.data?.message || 'Something went wrong');
 			}
-			setMeetings((prev) => ({ ...prev, [roomId]: res.data.data }));
+			const data = res.data.data.reduce((acc, val) => {
+				const key = dayjs(val.meetingDate).format('YYYY-MM-DD');
+				if (acc[key]) {
+					acc[key] = [...acc[key], val];
+				} else {
+					acc[key] = [val];
+				}
+				return acc;
+			}, {});
+			setMeetings((prev) => ({ ...prev, [roomId]: data }));
 		} catch (error) {
 			throw error;
 		}
@@ -66,7 +75,7 @@ export default function RoomSection() {
 				const { _id, roomId, roomName } = room ?? {};
 
 				return (
-					<Accordion onChange={(_, expanded) => expanded && !meetings[roomId] && getRoomMeetingsReq(roomId)} key={_id} defaultExpanded={i === DEFAULT_OPEN_INDEX}>
+					<Accordion sx={{ borderLeft: '4px solid red' }} onChange={(_, expanded) => expanded && !meetings[roomId] && getRoomMeetingsReq(roomId)} key={_id} defaultExpanded={i === DEFAULT_OPEN_INDEX}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
 							<Typography fontWeight={700}>{roomName}</Typography>
 						</AccordionSummary>
@@ -79,18 +88,22 @@ export default function RoomSection() {
 							<div>
 								{!meetings[roomId] ? (
 									'Loading'
-								) : meetings[roomId].length ? (
+								) : Object.keys(meetings[roomId]).length ? (
 									<div className='meetings'>
-										{meetings[roomId].map(({ _id, guestRooms, roomId, meetingDate, startTime, endTime }) => (
-											<div style={{ display: 'contents' }} key={'hg'}>
-												<div className='date'>{dayjs(meetingDate).format('YYYY-MM-DD')}</div>
-												<div>
-													<Button sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => {}}>
-														{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
-													</Button>
+										{Object.entries(meetings[roomId]).map(([key, val]) => {
+											return (
+												<div style={{ display: 'contents' }} key={key}>
+													<div className='date'>{key}</div>
+													<div className='timings' >
+														{val?.map?.(({ _id, guestUsers, roomId, meetingDate, startTime, endTime }) => (
+															<Button key={_id} sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => {}}>
+																{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
+															</Button>
+														))}
+													</div>
 												</div>
-											</div>
-										))}
+											);
+										})}
 									</div>
 								) : (
 									'No Meeting Found'

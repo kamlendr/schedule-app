@@ -90,11 +90,17 @@ $columnGap: 2rem;
 	align-items: start;
 	.date {
 		padding-top: 4px;
+		font-weight: 500;
 	}
 	.time {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
+	}
+	.timings {
+		display: flex;
+		gap: 4px;
+		flex-wrap: wrap;
 	}
 }
 

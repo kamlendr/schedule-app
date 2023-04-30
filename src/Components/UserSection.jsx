@@ -51,7 +51,19 @@ export default function UserSection(props) {
 			if (!res?.data?.success) {
 				throw new Error(res?.data?.message || 'Something went wrong');
 			}
-			setMeetings((prev) => ({ ...prev, [userId]: res.data.data }));
+
+			const data = res.data.data.reduce((acc, val) => {
+				const key = dayjs(val.meetingDate).format('YYYY-MM-DD');
+				if (acc[key]) {
+					acc[key] = [...acc[key], val];
+				} else {
+					acc[key] = [val];
+				}
+				return acc;
+			}, {});
+			console.log(data);
+
+			setMeetings((prev) => ({ ...prev, [userId]: data }));
 		} catch (error) {
 			throw error;
 		}
@@ -68,7 +80,7 @@ export default function UserSection(props) {
 				const { _id, userId, userName, userEmail } = user ?? {};
 
 				return (
-					<Accordion onChange={(_, expanded) => expanded && !meetings[userId] && getUserMeetingsReq(userId)} key={_id} defaultExpanded={i === DEFAULT_OPEN_INDEX}>
+					<Accordion sx={{ borderLeft: '4px solid #0288d1' }} onChange={(_, expanded) => expanded && !meetings[userId] && getUserMeetingsReq(userId)} key={_id} defaultExpanded={i === DEFAULT_OPEN_INDEX}>
 						<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
 							<Typography fontWeight={700}>{userName}</Typography>
 						</AccordionSummary>
@@ -84,18 +96,22 @@ export default function UserSection(props) {
 							<div>
 								{!meetings[userId] ? (
 									'Loading'
-								) : meetings[userId].length ? (
+								) : Object.keys(meetings[userId]).length ? (
 									<div className='meetings'>
-										{meetings[userId].map(({ _id, guestUsers, roomId, meetingDate, startTime, endTime }) => (
-											<div style={{ display: 'contents' }} key={'hg'}>
-												<div className='date'>{dayjs(meetingDate).format('YYYY-MM-DD')}</div>
-												<div>
-													<Button sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => openModal(USER_FORM, user)}>
-														{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
-													</Button>
+										{Object.entries(meetings[userId]).map(([key, val]) => {
+											return (
+												<div style={{ display: 'contents' }} key={key}>
+													<div className='date'>{key}</div>
+													<div className='timings' >
+														{val?.map?.(({ _id, guestUsers, roomId, meetingDate, startTime, endTime }) => (
+															<Button key={_id} sx={{ borderRadius: '0px', padding: '0px 6px' }} size='small' color='info' variant='outlined' onClick={() => {}}>
+																{`${dayjs(startTime).format('hh:mm a')} - ${dayjs(endTime).format('hh:mm a')}`}
+															</Button>
+														))}
+													</div>
 												</div>
-											</div>
-										))}
+											);
+										})}
 									</div>
 								) : (
 									'No Meeting Found'

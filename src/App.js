@@ -37,7 +37,6 @@ function App() {
     {
       element: appRef,
       callback: (entries) => {
-        console.log(entries[0].target.getBoundingClientRect());
         if (entries[0].target.getBoundingClientRect().width < 700) { setSelectedTabs([USER_TAB]) } else {
           setSelectedTabs(defaultTabs)
         }
